@@ -1,39 +1,74 @@
-import sys
+def PopularTopic(topics):
+    max = int(topics[0][1])
+    maxIndex = 0
+    for Topic in range(len(topics)):
+        if int(topics[Topic][1]) > max:
+            max = int(topics[Topic][1])
+            maxIndex = Topic
+    return maxIndex
 
-nTopics = input("How many topics are there?\n")
+StudentTeamStatus = {    
+}
+
+Settings = open("Settings.txt", "r")
+reader = Settings.readlines()
+i = 0
+while reader[i] != "Topics\n":
+    if i == 1:
+        for word in reader[i].split():
+            if word.isdigit():
+                MaxSize = int(word)
+    if i == 2:
+        for word in reader[i].split():
+            if word.isdigit():
+                MaxTeams = int(word)
+    #Add More Ifs here if there are more settings that need to be added
+    i += 1
+
 topics = []
-tokens = []
-for x in range(int(nTopics)):
-    x = input(f"Enter topic {x + 1}:\n")
-    topics.append(x)
-    tokens.append(int(0))
-nStudents = input("How many students are there?\n")
+while reader[i] != "Participants/Token Distribution\n":
+    if reader[i] != "" and reader[i] != "Topics\n" and reader[i] != '\n':
+        reader[i] = reader[i][:-1]
+        topic = []
+        topic.append(reader[i])
+        topic.append(0)
+        topics.append(topic)
+    i += 1
+
+i += 1
 students = []
+while reader[i] != "END\n":
+    if reader[i] != "" and reader[i] != "\n":
+        student = []
+        x = -1
+        for word in reader[i].split():
+            student.append(word)
+            if x != -1:
+                topics[x][1] += int(word)
+            x += 1
+        students.append(student)
+        StudentTeamStatus.update({f"{student[0]}": "No Team"})
+    i += 1
 
-print("List Them:")
-for x in range(int(nStudents)):
-    x = input();
-    student = []
-    student.append(x)
-    students.append(student)
-    print("Tokens for Topic :")
-    for j in range(int(nTopics)):
-        y = input(f"{topics[j]}\n")
-        num = int(y)
-        student.append(int(y))
-        tokens[j] += num
-
-sortedTokens = sorted(tokens)
-for i in range(3):
-    for j in range(int(nTopics)):
-        if(sortedTokens[i] == tokens[j]):
-            print(f"Topic chosen : {topics[j]}")
-            for x in range(int(nStudents)):
-                if students[x][j] != 0:
-                    print(f"{students[x][0]} : {students[x][j]}")
-            tokens[j] = -1
-            break
+for Topic in range(MaxTeams):
+    x = PopularTopic(topics)
+    print(topics[x])
+    members = 0
+    for it in range(len(topics)):
+        for S in range(len(students)):
+            if int(students[S][x + 1]) == len(topics) - it:
+                if int(students[S][x + 1]) > len(topics)/2:
+                    print(f"{students[S][0]} : {students[S][x + 1]}")
+                    StudentTeamStatus.update({f"{students[S][0]}": "Has Team"})
+                    members += 1
+            if members == MaxSize:
+                break;
+        if members == MaxSize:
+            break;
+    print("")
+    topics[x][1] = 0
 
 
+print(StudentTeamStatus)
 
-    
+Settings.close()
