@@ -1,6 +1,5 @@
 Settings
 Team-Size-Max = 4
-Max-Teams = 6
 
 Topics
 Machine Learning
@@ -29,7 +28,7 @@ Cece-Zhu 2 0 0 4 0 1 0
 Peter-Derias 2 2 0 2 1 0 0
 Pengsen-Mao 0 0 4 0 0 2 1
 Andrew-Xie 3 0 3 0 1 0 0
-Joshua-Lam 3 2 2 0 0 0 0
+Joshua-Lam 3 0 0 0 0 4 0
 Shirley-Zhou 0 0 0 5 1 1 0
 Sachin-Paliwal 0 0 3 0 2 0 2
 Nian-Li 2 0 3 0 2 0 0
