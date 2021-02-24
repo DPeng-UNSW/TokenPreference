@@ -1,5 +1,7 @@
 Settings
 Team-Size-Max = 4
+Subtopic-Threshold-Divisor = 5
+Min-Team-Size = 3
 
 Topics
 Machine Learning
