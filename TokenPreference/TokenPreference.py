@@ -77,9 +77,10 @@ for Topic in range((len(students)//MaxSize) + 1):
         if members == MaxSize:
             break;
     if members < MinSize:
-        print("\nConsider Reassigning People Below")
+        print("\nReassign The People Below")
         print("Their preferences are as follows")
         for mem in member_list_short:
+            StudentTeamStatus.update({f"{students[mem][0]}": "No Team"})
             print(students[mem])
 
     if members > MaxSize:
