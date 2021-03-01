@@ -1,6 +1,6 @@
 #Define Certain Settings
 Max_Team_Size = 4
-Min_Team_Size = 2
+Min_Team_Size = 3
 
 Topics = ["Machine Learning", "Organ Exchange", "Degree Planner", "Differential Privacy", "Random Sampling", "Visualization", "Benchmark Graph Instances", "Graph Theory in Finance", "Enumeration Algorithms"]
 
@@ -78,23 +78,25 @@ def Remove_Lowest(Topic_Members, No_Team_Students):
     del Topic_Members[lowest]
     No_Team_Students.update({lowest: Students[lowest]})
 
-z = 0
+
+Complete = False
 while len(No_Team_Students) > 0:
     Remove_Min = True
     result = Membership_Division(Topics_Membership, No_Team_Students)
-    if result == False:
+    if result == False and Complete == True:
         break
     for Topic in list(Topics_Membership.keys()):
         if len(Topics_Membership[Topic]) > Max_Team_Size:
             Remove_Min = False
+            Complete = False
             for i in range(len(Topics_Membership[Topic]) - Max_Team_Size):
                 Remove_Lowest(Topics_Membership[Topic], No_Team_Students)
     if Remove_Min == True:
+        Complete = True
         for Topic in list(Topics_Membership.keys()):
             if len(Topics_Membership[Topic]) < Min_Team_Size:
                 for i in range(len(Topics_Membership[Topic])):
                     Remove_Lowest(Topics_Membership[Topic], No_Team_Students)
-    
 
 for topic in Topics:
     print("========================================")
