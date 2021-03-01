@@ -5,15 +5,9 @@ Min_Team_Size = 2
 Topics = ["Machine Learning", "Organ Exchange", "Degree Planner", "Differential Privacy", "Random Sampling", "Visualization", "Benchmark Graph Instances", "Graph Theory in Finance", "Enumeration Algorithms"]
 
 #Get Topics
-Topics_Membership = {
-        "Machine Learning": {},
-        "Organ Exchange": {},
-        "Degree Planner": {},
-        "Differential Privacy": {},
-        "Random Sampling": {},
-        "Visualization": {},
-        "Benchmark Graph Instances": {}
-    }
+Topics_Membership = {}
+for Topic in Topics:
+    Topics_Membership.update({Topic: {}})
 
 #Get Students
 def add_student(Name, preferences, topics, student_Dictionary):
