@@ -1,104 +1,112 @@
-def PopularTopic(topics):
-    max = int(topics[0][1])
-    maxIndex = 0
-    for Topic in range(len(topics)):
-        if int(topics[Topic][1]) > max:
-            max = int(topics[Topic][1])
-            maxIndex = Topic
-    return maxIndex
+#Define Certain Settings
+Max_Team_Size = 4
+Min_Team_Size = 2
 
-StudentTeamStatus = {    
-}
+Topics = ["Machine Learning", "Organ Exchange", "Degree Planner", "Differential Privacy", "Random Sampling", "Visualization", "Benchmark Graph Instances"]
 
-Settings = open("Settings.txt", "r")
-reader = Settings.readlines()
-i = 0
-while reader[i] != "Topics\n":
-    if i == 1:
-        for word in reader[i].split():
-            if word.isdigit():
-                MaxSize = int(word)
-    if i == 2:
-        for word in reader[i].split():
-            if word.isdigit():
-                STDivisor = int(word)
-    if i == 3:
-        for word in reader[i].split():
-            if word.isdigit():
-                MinSize = int(word)
-    #Add More Ifs here if there are more settings that need to be added
-    i += 1
+#Get Topics
+Topics_Membership = {
+        "Machine Learning": {},
+        "Organ Exchange": {},
+        "Degree Planner": {},
+        "Differential Privacy": {},
+        "Random Sampling": {},
+        "Visualization": {},
+        "Benchmark Graph Instances": {}
+    }
 
-topics = []
-while reader[i] != "Participants/Token Distribution\n":
-    if reader[i] != "" and reader[i] != "Topics\n" and reader[i] != '\n':
-        reader[i] = reader[i][:-1]
-        topic = []
-        topic.append(reader[i])
-        topic.append(0)
-        topics.append(topic)
-    i += 1
+#Get Students
+def add_student(Name, preferences, topics, student_Dictionary):
+    Student_Preferences = {}
+    for topic in range(len(preferences)):
+        Student_Preferences.update({topics[topic]: preferences[topic]})
+    student_Dictionary.update({Name: Student_Preferences})
+    return Student_Preferences
 
-i += 1
-students = []
-while reader[i] != "END\n":
-    if reader[i] != "" and reader[i] != "\n":
-        student = []
-        x = -1
-        for word in reader[i].split():
-            student.append(word)
-            if x != -1:
-                topics[x][1] += int(word)
-            x += 1
-        students.append(student)
-        StudentTeamStatus.update({f"{student[0]}": "No Team"})
-    i += 1
 
-for Topic in range((len(students)//MaxSize) + 1):
-    print("=================================================================")
-    x = PopularTopic(topics)
-    if topics[x][1] >= (len(students)/STDivisor) * len(topics):
-        print(topics[x], end = '')
-        print("- Consider Splitting into Subtopics")
-    else:
-        print(topics[x])
+Students = { }
+add_student("David Peng", [0, 0, 0, 7, 0, 0, 0], Topics, Students)
+add_student("Jodie Lee", [1, 1, 1, 1, 1, 1, 1], Topics, Students)
+add_student("Dallas Yan", [2, 0, 1, 2, 0, 1, 1], Topics, Students)
+add_student("Wisea Resosudarmo", [7, 0, 0, 0, 0, 0, 0], Topics, Students)
+add_student("Xinran Zhu", [3, 4, 0, 0, 0, 0, 0], Topics, Students)
+add_student("Angus Ritossa", [5, 0, 2, 0, 0, 0, 0], Topics, Students)
+add_student("Tiana Tsang Ung", [2, 2, 2, 1, 0, 0, 0], Topics, Students)
+add_student("Fergus Yip", [4, 3, 0, 0, 0, 0, 0], Topics, Students)
+add_student("Paula Tennet", [1, 1, 2, 0, 0, 3, 1], Topics, Students)
+add_student("Sarthak Sahoo", [3, 2, 0, 0, 2, 0, 0], Topics, Students)
+add_student("Yuanyuan Li", [3, 1, 1, 1, 1, 0, 0], Topics, Students)
+add_student("Diya Patel", [5, 2, 0, 0, 0, 0, 0], Topics, Students)
+add_student("Aksay Ram Moham Valluru", [0, 0, 0, 3, 4, 0, 0], Topics, Students)
+add_student("Cece Zhu", [2, 0, 0, 4, 0, 1, 0], Topics, Students)
+add_student("Peter Derias", [2, 2, 0, 2, 1, 0, 0], Topics, Students)
+add_student("Pengsen Mao", [0, 0, 4, 0, 0, 2, 1], Topics, Students)
+add_student("Andrew Xie", [3, 0, 3, 0, 1, 0, 0], Topics, Students)
+add_student("Joshua Lam", [3, 0, 0, 0, 0, 4, 0], Topics, Students)
+add_student("Shirley Zhou", [0, 0, 0, 0, 5, 1, 1], Topics, Students)
+add_student("Sachin Paliwal", [0, 0, 3, 0, 2, 0, 2], Topics, Students)
+add_student("Nian Li", [2, 0, 3, 0, 2, 0, 0], Topics, Students)
+
+#Get each student's highest preference
+def Membership_Division(Topics_Membership, Student_List):
+    Student_Names = list(Student_List.keys())
+    Student_Preferences = list(Student_List.values())
+    counter_failure = 0
+    for i in range(len(Student_Names)):
+        max = 0
+        highest_topic = "Failure"
+        temp_Topics = list(Student_Preferences[i].keys())
+        for topic in temp_Topics:
+            if Student_Preferences[i][topic] > max:
+                max = Student_Preferences[i][topic]
+                highest_topic = topic
+        if highest_topic == "Failure":
+            counter_failure += 1
+            continue
+        Topics_Membership[highest_topic].update({Student_Names[i]: max})
+        Students[Student_Names[i]].update({highest_topic: -1})
+        del Student_List[Student_Names[i]]
+
+    if counter_failure == len(Student_Names):
+        return False
+    return True
+
+No_Team_Students = Students.copy()
+
+def Remove_Lowest(Topic_Members, No_Team_Students):
+    Names = list(Topic_Members.keys())
+    min = Topic_Members[Names[0]]
+    lowest = Names[0]
+    for Student in Names:
+        if Topic_Members[Student] < min:
+            min = Topic_Members[Student]
+            lowest = Student
+    del Topic_Members[lowest]
+    No_Team_Students.update({lowest: Students[lowest]})
+
+z = 0
+while len(No_Team_Students) > 0:
+    result = Membership_Division(Topics_Membership, No_Team_Students)
+    if result == False:
+        break
+    for Topic in list(Topics_Membership.keys()):
+        if len(Topics_Membership[Topic]) > Max_Team_Size:
+            for i in range(len(Topics_Membership[Topic]) - Max_Team_Size):
+                Remove_Lowest(Topics_Membership[Topic], No_Team_Students)
+    for Topic in list(Topics_Membership.keys()):
+        if len(Topics_Membership[Topic]) < Min_Team_Size:
+            for i in range(len(Topics_Membership[Topic])):
+                Remove_Lowest(Topics_Membership[Topic], No_Team_Students)
     
-    members = 0
-    member_list_short = []
-    for it in range(len(topics)):
-        member_list_long = []
-        for S in range(len(students)):
-            if int(students[S][x + 1]) == len(topics) - it and StudentTeamStatus[students[S][0]] != "Has Team":
-                StudentTeamStatus.update({f"{students[S][0]}": "Has Team"})
-                print(f"{students[S][0]} : {students[S][x + 1]}")
-                member_list_long.append(S)
-                member_list_short.append(S)
-                members += 1
-        if members == MaxSize:
-            break;
-    if members < MinSize:
-        print("\nReassign The People Below")
-        print("Their preferences are as follows")
-        for mem in member_list_short:
-            StudentTeamStatus.update({f"{students[mem][0]}": "No Team"})
-            print(students[mem])
 
-    if members > MaxSize:
-        print("\nConsider Removing Some The Members Below")
-        print("Their preferences are as follows")
-        for mem in member_list_long:
-            print(students[mem])
-    print("")
-    topics[x][1] = 0
-    print("=================================================================")
+for topic in Topics:
+    print("========================================")
+    print(f"{topic}'s Members: ")
+    for Student in list(Topics_Membership[topic].keys()):
+        print(Student)
 
-
-#for Student in StudentTeamStatus:
-#    if(StudentTeamStatus[Student] == "Has Team"):
-#        print(Student + ' : ' + StudentTeamStatus[Student])
-
-for Student in StudentTeamStatus:
-    if(StudentTeamStatus[Student] == "No Team"):
-        print(Student + ' : ' + StudentTeamStatus[Student])
-
-Settings.close()
+print("========================================")
+print("Student's Without a Team: ")
+for Student in list(No_Team_Students.keys()):
+    print(Student)
+print("========================================")
